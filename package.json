@@ -1,0 +1,33 @@
+{
+  "name": "figma-claude-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server to create designs on Figma through Claude Desktop.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaphS03/figma-claude-mcp-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RaphS03/figma-claude-mcp-server/issues"
+  },
+  "homepage": "https://github.com/RaphS03/figma-claude-mcp-server#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "axios": "^1.10.0",
+    "dotenv": "^17.2.0",
+    "figma-api": "^2.0.2-beta",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.13",
+    "nodemon": "^3.1.10",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
