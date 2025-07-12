@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -18,7 +18,7 @@
     "types": ["node"]
   },
   "include": [
-    "src/**/*"
+    "./**/*"
   ],
   "exclude": [
     "node_modules",
