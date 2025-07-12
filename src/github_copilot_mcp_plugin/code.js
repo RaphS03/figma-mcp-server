@@ -1,6 +1,352 @@
 // This is the main code file for the GitHub Copilot MCP Figma plugin
 // It handles Figma API commands
 
+// shadcn/ui design tokens for Figma components
+// Based on the official shadcn/ui design system
+
+const SHADCN_COLORS = {
+  // Base colors (HSL values converted to RGB)
+  background: { r: 1, g: 1, b: 1, a: 1 }, // hsl(0 0% 100%)
+  foreground: { r: 0.02, g: 0.02, b: 0.02, a: 1 }, // hsl(222.2 84% 4.9%)
+  
+  // Card colors
+  card: { r: 1, g: 1, b: 1, a: 1 }, // hsl(0 0% 100%)
+  cardForeground: { r: 0.02, g: 0.02, b: 0.02, a: 1 }, // hsl(222.2 84% 4.9%)
+  
+  // Popover colors
+  popover: { r: 1, g: 1, b: 1, a: 1 }, // hsl(0 0% 100%)
+  popoverForeground: { r: 0.02, g: 0.02, b: 0.02, a: 1 }, // hsl(222.2 84% 4.9%)
+  
+  // Primary colors
+  primary: { r: 0.09, g: 0.09, b: 0.11, a: 1 }, // hsl(222.2 84% 4.9%)
+  primaryForeground: { r: 0.98, g: 0.98, b: 0.98, a: 1 }, // hsl(210 40% 98%)
+  
+  // Secondary colors
+  secondary: { r: 0.96, g: 0.96, b: 0.97, a: 1 }, // hsl(210 40% 96%)
+  secondaryForeground: { r: 0.09, g: 0.09, b: 0.11, a: 1 }, // hsl(222.2 84% 4.9%)
+  
+  // Muted colors
+  muted: { r: 0.96, g: 0.96, b: 0.97, a: 1 }, // hsl(210 40% 96%)
+  mutedForeground: { r: 0.45, g: 0.51, b: 0.58, a: 1 }, // hsl(215.4 16.3% 46.9%)
+  
+  // Accent colors
+  accent: { r: 0.96, g: 0.96, b: 0.97, a: 1 }, // hsl(210 40% 96%)
+  accentForeground: { r: 0.09, g: 0.09, b: 0.11, a: 1 }, // hsl(222.2 84% 4.9%)
+  
+  // Destructive colors
+  destructive: { r: 0.94, g: 0.33, b: 0.31, a: 1 }, // hsl(0 84.2% 60.2%)
+  destructiveForeground: { r: 0.98, g: 0.98, b: 0.98, a: 1 }, // hsl(210 40% 98%)
+  
+  // Border colors
+  border: { r: 0.89, g: 0.89, b: 0.91, a: 1 }, // hsl(214.3 31.8% 91.4%)
+  input: { r: 0.89, g: 0.89, b: 0.91, a: 1 }, // hsl(214.3 31.8% 91.4%)
+  
+  // Ring colors
+  ring: { r: 0.09, g: 0.09, b: 0.11, a: 1 }, // hsl(222.2 84% 4.9%)
+  
+  // Chart colors
+  chart1: { r: 0.82, g: 0.12, b: 0.19, a: 1 }, // hsl(12 76% 61%)
+  chart2: { r: 0.27, g: 0.65, b: 0.33, a: 1 }, // hsl(173 58% 39%)
+  chart3: { r: 0.16, g: 0.54, b: 0.91, a: 1 }, // hsl(197 37% 96%)
+  chart4: { r: 0.89, g: 0.64, b: 0.20, a: 1 }, // hsl(43 74% 66%)
+  chart5: { r: 0.63, g: 0.34, b: 0.89, a: 1 }, // hsl(27 87% 67%)
+};
+
+const SHADCN_TYPOGRAPHY = {
+  // Font family - shadcn/ui uses Inter as default
+  fontFamily: "Inter",
+  
+  // Font sizes based on Tailwind CSS scale
+  fontSize: {
+    xs: 12,    // text-xs
+    sm: 14,    // text-sm
+    base: 16,  // text-base
+    lg: 18,    // text-lg
+    xl: 20,    // text-xl
+    '2xl': 24, // text-2xl
+    '3xl': 30, // text-3xl
+    '4xl': 36, // text-4xl
+    '5xl': 48, // text-5xl
+    '6xl': 60, // text-6xl
+    '7xl': 72, // text-7xl
+    '8xl': 96, // text-8xl
+    '9xl': 128, // text-9xl
+  },
+  
+  // Font weights
+  fontWeight: {
+    thin: 100,
+    extralight: 200,
+    light: 300,
+    normal: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+    extrabold: 800,
+    black: 900,
+  },
+  
+  // Line heights
+  lineHeight: {
+    none: 1,
+    tight: 1.25,
+    snug: 1.375,
+    normal: 1.5,
+    relaxed: 1.625,
+    loose: 2,
+  },
+};
+
+const SHADCN_SPACING = {
+  // Based on Tailwind CSS spacing scale (rem values converted to px)
+  px: 1,
+  0.5: 2,
+  1: 4,
+  1.5: 6,
+  2: 8,
+  2.5: 10,
+  3: 12,
+  3.5: 14,
+  4: 16,
+  5: 20,
+  6: 24,
+  7: 28,
+  8: 32,
+  9: 36,
+  10: 40,
+  11: 44,
+  12: 48,
+  14: 56,
+  16: 64,
+  20: 80,
+  24: 96,
+  28: 112,
+  32: 128,
+  36: 144,
+  40: 160,
+  44: 176,
+  48: 192,
+  52: 208,
+  56: 224,
+  60: 240,
+  64: 256,
+  72: 288,
+  80: 320,
+  96: 384,
+};
+
+const SHADCN_BORDER_RADIUS = {
+  none: 0,
+  sm: 2,
+  DEFAULT: 6,
+  md: 6,
+  lg: 8,
+  xl: 12,
+  '2xl': 16,
+  '3xl': 24,
+  full: 9999,
+};
+
+const SHADCN_SHADOWS = {
+  sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+  DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+  md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+  lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+  '2xl': "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+  inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
+  none: "0 0 #0000",
+};
+
+// Component-specific presets
+const SHADCN_COMPONENTS = {
+  button: {
+    primary: {
+      background: SHADCN_COLORS.primary,
+      foreground: SHADCN_COLORS.primaryForeground,
+      border: SHADCN_COLORS.primary,
+      borderRadius: SHADCN_BORDER_RADIUS.md,
+      fontSize: SHADCN_TYPOGRAPHY.fontSize.sm,
+      fontWeight: SHADCN_TYPOGRAPHY.fontWeight.medium,
+      padding: { top: 8, right: 16, bottom: 8, left: 16 },
+      minHeight: 36,
+    },
+    secondary: {
+      background: SHADCN_COLORS.secondary,
+      foreground: SHADCN_COLORS.secondaryForeground,
+      border: SHADCN_COLORS.border,
+      borderRadius: SHADCN_BORDER_RADIUS.md,
+      fontSize: SHADCN_TYPOGRAPHY.fontSize.sm,
+      fontWeight: SHADCN_TYPOGRAPHY.fontWeight.medium,
+      padding: { top: 8, right: 16, bottom: 8, left: 16 },
+      minHeight: 36,
+    },
+    destructive: {
+      background: SHADCN_COLORS.destructive,
+      foreground: SHADCN_COLORS.destructiveForeground,
+      border: SHADCN_COLORS.destructive,
+      borderRadius: SHADCN_BORDER_RADIUS.md,
+      fontSize: SHADCN_TYPOGRAPHY.fontSize.sm,
+      fontWeight: SHADCN_TYPOGRAPHY.fontWeight.medium,
+      padding: { top: 8, right: 16, bottom: 8, left: 16 },
+      minHeight: 36,
+    },
+    ghost: {
+      background: { r: 0, g: 0, b: 0, a: 0 }, // transparent
+      foreground: SHADCN_COLORS.foreground,
+      border: { r: 0, g: 0, b: 0, a: 0 }, // transparent
+      borderRadius: SHADCN_BORDER_RADIUS.md,
+      fontSize: SHADCN_TYPOGRAPHY.fontSize.sm,
+      fontWeight: SHADCN_TYPOGRAPHY.fontWeight.medium,
+      padding: { top: 8, right: 16, bottom: 8, left: 16 },
+      minHeight: 36,
+    },
+  },
+  
+  card: {
+    background: SHADCN_COLORS.card,
+    foreground: SHADCN_COLORS.cardForeground,
+    border: SHADCN_COLORS.border,
+    borderRadius: SHADCN_BORDER_RADIUS.lg,
+    padding: { top: 24, right: 24, bottom: 24, left: 24 },
+    shadow: SHADCN_SHADOWS.sm,
+  },
+  
+  input: {
+    background: SHADCN_COLORS.background,
+    foreground: SHADCN_COLORS.foreground,
+    border: SHADCN_COLORS.input,
+    borderRadius: SHADCN_BORDER_RADIUS.md,
+    fontSize: SHADCN_TYPOGRAPHY.fontSize.sm,
+    padding: { top: 8, right: 12, bottom: 8, left: 12 },
+    minHeight: 36,
+    placeholderColor: SHADCN_COLORS.mutedForeground,
+  },
+  
+  label: {
+    foreground: SHADCN_COLORS.foreground,
+    fontSize: SHADCN_TYPOGRAPHY.fontSize.sm,
+    fontWeight: SHADCN_TYPOGRAPHY.fontWeight.medium,
+    lineHeight: SHADCN_TYPOGRAPHY.lineHeight.none,
+  },
+  
+  badge: {
+    primary: {
+      background: SHADCN_COLORS.primary,
+      foreground: SHADCN_COLORS.primaryForeground,
+      border: SHADCN_COLORS.primary,
+      borderRadius: SHADCN_BORDER_RADIUS.full,
+      fontSize: SHADCN_TYPOGRAPHY.fontSize.xs,
+      fontWeight: SHADCN_TYPOGRAPHY.fontWeight.semibold,
+      padding: { top: 2, right: 8, bottom: 2, left: 8 },
+      minHeight: 20,
+    },
+    secondary: {
+      background: SHADCN_COLORS.secondary,
+      foreground: SHADCN_COLORS.secondaryForeground,
+      border: SHADCN_COLORS.border,
+      borderRadius: SHADCN_BORDER_RADIUS.full,
+      fontSize: SHADCN_TYPOGRAPHY.fontSize.xs,
+      fontWeight: SHADCN_TYPOGRAPHY.fontWeight.semibold,
+      padding: { top: 2, right: 8, bottom: 2, left: 8 },
+      minHeight: 20,
+    },
+    destructive: {
+      background: SHADCN_COLORS.destructive,
+      foreground: SHADCN_COLORS.destructiveForeground,
+      border: SHADCN_COLORS.destructive,
+      borderRadius: SHADCN_BORDER_RADIUS.full,
+      fontSize: SHADCN_TYPOGRAPHY.fontSize.xs,
+      fontWeight: SHADCN_TYPOGRAPHY.fontWeight.semibold,
+      padding: { top: 2, right: 8, bottom: 2, left: 8 },
+      minHeight: 20,
+    },
+  },
+  
+  dialog: {
+    background: SHADCN_COLORS.background,
+    foreground: SHADCN_COLORS.foreground,
+    border: SHADCN_COLORS.border,
+    borderRadius: SHADCN_BORDER_RADIUS.lg,
+    shadow: SHADCN_SHADOWS.lg,
+    padding: { top: 24, right: 24, bottom: 24, left: 24 },
+    maxWidth: 512,
+  },
+  
+  avatar: {
+    borderRadius: SHADCN_BORDER_RADIUS.full,
+    background: SHADCN_COLORS.muted,
+    foreground: SHADCN_COLORS.mutedForeground,
+    sizes: {
+      sm: 32,
+      md: 40,
+      lg: 48,
+      xl: 56,
+    },
+  },
+  
+  separator: {
+    background: SHADCN_COLORS.border,
+    height: 1,
+    width: '100%',
+  },
+  
+  skeleton: {
+    background: SHADCN_COLORS.muted,
+    borderRadius: SHADCN_BORDER_RADIUS.md,
+    animation: 'pulse',
+  },
+};
+
+// Helper function to get component styles
+function getShadcnComponentStyle(component, variant = 'default') {
+  const componentStyles = SHADCN_COMPONENTS[component];
+  if (!componentStyles) {
+    console.warn(`Unknown component: ${component}`);
+    return {};
+  }
+  
+  if (variant !== 'default' && componentStyles[variant]) {
+    return componentStyles[variant];
+  }
+  
+  return componentStyles.default || componentStyles;
+}
+
+// Helper function to convert HSL to RGB (for custom colors)
+function hslToRgb(h, s, l) {
+  h /= 360;
+  s /= 100;
+  l /= 100;
+  
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h * 6) % 2 - 1));
+  const m = l - c / 2;
+  
+  let r, g, b;
+  
+  if (0 <= h && h < 1/6) {
+    r = c; g = x; b = 0;
+  } else if (1/6 <= h && h < 2/6) {
+    r = x; g = c; b = 0;
+  } else if (2/6 <= h && h < 3/6) {
+    r = 0; g = c; b = x;
+  } else if (3/6 <= h && h < 4/6) {
+    r = 0; g = x; b = c;
+  } else if (4/6 <= h && h < 5/6) {
+    r = x; g = 0; b = c;
+  } else {
+    r = c; g = 0; b = x;
+  }
+  
+  return {
+    r: Math.round((r + m) * 255) / 255,
+    g: Math.round((g + m) * 255) / 255,
+    b: Math.round((b + m) * 255) / 255,
+    a: 1
+  };
+}
+
 // Plugin state
 const state = {
   serverPort: 3055, // Default port
@@ -127,6 +473,25 @@ async function handleCommand(command, params) {
       return await createFrame(params);
     case "create_text":
       return await createText(params);
+    // shadcn/ui component creation functions
+    case "create_shadcn_button":
+      return await createShadcnButton(params);
+    case "create_shadcn_card":
+      return await createShadcnCard(params);
+    case "create_shadcn_input":
+      return await createShadcnInput(params);
+    case "create_shadcn_badge":
+      return await createShadcnBadge(params);
+    case "create_shadcn_dialog":
+      return await createShadcnDialog(params);
+    case "create_shadcn_avatar":
+      return await createShadcnAvatar(params);
+    case "create_shadcn_separator":
+      return await createShadcnSeparator(params);
+    case "create_shadcn_skeleton":
+      return await createShadcnSkeleton(params);
+    case "apply_shadcn_theme":
+      return await applyShadcnTheme(params);
     case "set_fill_color":
       return await setFillColor(params);
     case "set_stroke_color":
@@ -650,16 +1015,43 @@ async function createRectangle(params) {
     x = 0,
     y = 0,
     width = 100,
-    height = 100,
+    height = 40,
     name = "Rectangle",
     parentId,
+    variant = "primary",
+    component = "button",
+    fillColor,
+    strokeColor,
+    strokeWeight,
+    cornerRadius,
   } = params || {};
 
+  // Use shadcn component style if available
+  const style = getShadcnComponentStyle(component, variant);
   const rect = figma.createRectangle();
   rect.x = x;
   rect.y = y;
   rect.resize(width, height);
   rect.name = name;
+
+  // Fill color
+  rect.fills = [
+    {
+      type: "SOLID",
+      color: style.background ? { r: style.background.r, g: style.background.g, b: style.background.b } : SHADCN_COLORS.background,
+      opacity: style.background ? style.background.a : 1,
+    },
+  ];
+  // Stroke color
+  rect.strokes = [
+    {
+      type: "SOLID",
+      color: style.border ? { r: style.border.r, g: style.border.g, b: style.border.b } : SHADCN_COLORS.border,
+      opacity: style.border ? style.border.a : 1,
+    },
+  ];
+  rect.strokeWeight = strokeWeight !== undefined ? strokeWeight : 1;
+  rect.cornerRadius = cornerRadius !== undefined ? cornerRadius : (style.borderRadius || SHADCN_BORDER_RADIUS.md);
 
   // If parentId is provided, append to that node, otherwise append to current page
   if (parentId) {
@@ -682,6 +1074,10 @@ async function createRectangle(params) {
     y: rect.y,
     width: rect.width,
     height: rect.height,
+    fills: rect.fills,
+    strokes: rect.strokes,
+    strokeWeight: rect.strokeWeight,
+    cornerRadius: rect.cornerRadius,
     parentId: rect.parent ? rect.parent.id : undefined,
   };
 }
@@ -691,25 +1087,30 @@ async function createFrame(params) {
     x = 0,
     y = 0,
     width = 100,
-    height = 100,
+    height = 60,
     name = "Frame",
     parentId,
+    variant = "card",
+    component = "card",
     fillColor,
     strokeColor,
     strokeWeight,
+    cornerRadius,
     layoutMode = "NONE",
     layoutWrap = "NO_WRAP",
-    paddingTop = 10,
-    paddingRight = 10,
-    paddingBottom = 10,
-    paddingLeft = 10,
-    primaryAxisAlignItems = "MIN",
-    counterAxisAlignItems = "MIN",
-    layoutSizingHorizontal = "FIXED",
-    layoutSizingVertical = "FIXED",
-    itemSpacing = 0,
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
+    primaryAxisAlignItems,
+    counterAxisAlignItems,
+    layoutSizingHorizontal,
+    layoutSizingVertical,
+    itemSpacing,
   } = params || {};
 
+  // Use shadcn component style if available
+  const style = getShadcnComponentStyle(component, variant);
   const frame = figma.createFrame();
   frame.x = x;
   frame.y = y;
@@ -719,58 +1120,36 @@ async function createFrame(params) {
   // Set layout mode if provided
   if (layoutMode !== "NONE") {
     frame.layoutMode = layoutMode;
-    frame.layoutWrap = layoutWrap;
-
-    // Set padding values only when layoutMode is not NONE
-    frame.paddingTop = paddingTop;
-    frame.paddingRight = paddingRight;
-    frame.paddingBottom = paddingBottom;
-    frame.paddingLeft = paddingLeft;
-
-    // Set axis alignment only when layoutMode is not NONE
-    frame.primaryAxisAlignItems = primaryAxisAlignItems;
-    frame.counterAxisAlignItems = counterAxisAlignItems;
-
-    // Set layout sizing only when layoutMode is not NONE
-    frame.layoutSizingHorizontal = layoutSizingHorizontal;
-    frame.layoutSizingVertical = layoutSizingVertical;
-
-    // Set item spacing only when layoutMode is not NONE
-    frame.itemSpacing = itemSpacing;
+    frame.layoutWrap = layoutWrap || "NO_WRAP";
+    frame.primaryAxisAlignItems = primaryAxisAlignItems || "MIN";
+    frame.counterAxisAlignItems = counterAxisAlignItems || "MIN";
+    frame.layoutSizingHorizontal = layoutSizingHorizontal || "FIXED";
+    frame.layoutSizingVertical = layoutSizingVertical || "FIXED";
+    frame.itemSpacing = itemSpacing !== undefined ? itemSpacing : 8;
+    frame.paddingTop = paddingTop !== undefined ? paddingTop : (style.padding ? style.padding.top : 24);
+    frame.paddingRight = paddingRight !== undefined ? paddingRight : (style.padding ? style.padding.right : 24);
+    frame.paddingBottom = paddingBottom !== undefined ? paddingBottom : (style.padding ? style.padding.bottom : 24);
+    frame.paddingLeft = paddingLeft !== undefined ? paddingLeft : (style.padding ? style.padding.left : 24);
   }
 
-  // Set fill color if provided
-  if (fillColor) {
-    const paintStyle = {
+  // Fill color
+  frame.fills = [
+    {
       type: "SOLID",
-      color: {
-        r: parseFloat(fillColor.r) || 0,
-        g: parseFloat(fillColor.g) || 0,
-        b: parseFloat(fillColor.b) || 0,
-      },
-      opacity: parseFloat(fillColor.a) || 1,
-    };
-    frame.fills = [paintStyle];
-  }
-
-  // Set stroke color and weight if provided
-  if (strokeColor) {
-    const strokeStyle = {
+      color: style.background ? { r: style.background.r, g: style.background.g, b: style.background.b } : SHADCN_COLORS.background,
+      opacity: style.background ? style.background.a : 1,
+    },
+  ];
+  // Stroke color
+  frame.strokes = [
+    {
       type: "SOLID",
-      color: {
-        r: parseFloat(strokeColor.r) || 0,
-        g: parseFloat(strokeColor.g) || 0,
-        b: parseFloat(strokeColor.b) || 0,
-      },
-      opacity: parseFloat(strokeColor.a) || 1,
-    };
-    frame.strokes = [strokeStyle];
-  }
-
-  // Set stroke weight if provided
-  if (strokeWeight !== undefined) {
-    frame.strokeWeight = strokeWeight;
-  }
+      color: style.border ? { r: style.border.r, g: style.border.g, b: style.border.b } : SHADCN_COLORS.border,
+      opacity: style.border ? style.border.a : 1,
+    },
+  ];
+  frame.strokeWeight = strokeWeight !== undefined ? strokeWeight : 1;
+  frame.cornerRadius = cornerRadius !== undefined ? cornerRadius : (style.borderRadius || SHADCN_BORDER_RADIUS.lg);
 
   // If parentId is provided, append to that node, otherwise append to current page
   if (parentId) {
@@ -796,8 +1175,7 @@ async function createFrame(params) {
     fills: frame.fills,
     strokes: frame.strokes,
     strokeWeight: frame.strokeWeight,
-    layoutMode: frame.layoutMode,
-    layoutWrap: frame.layoutWrap,
+    cornerRadius: frame.cornerRadius,
     parentId: frame.parent ? frame.parent.id : undefined,
   };
 }
@@ -807,37 +1185,35 @@ async function createText(params) {
     x = 0,
     y = 0,
     text = "Text",
-    fontSize = 14,
-    fontWeight = 400,
-    fontColor = { r: 0, g: 0, b: 0, a: 1 }, // Default to black
+    variant = "primary",
+    component = "button",
+    fontSize,
+    fontWeight,
+    fontColor,
+    fontFamily,
     name = "",
     parentId,
   } = params || {};
 
+  // Use shadcn component style if available
+  const style = getShadcnComponentStyle(component, variant);
+  const resolvedFontSize = fontSize !== undefined ? fontSize : (style.fontSize || SHADCN_TYPOGRAPHY.fontSize.sm);
+  const resolvedFontWeight = fontWeight !== undefined ? fontWeight : (style.fontWeight || SHADCN_TYPOGRAPHY.fontWeight.medium);
+  const resolvedFontColor = fontColor || style.foreground || SHADCN_COLORS.foreground;
+  const resolvedFontFamily = fontFamily || SHADCN_TYPOGRAPHY.fontFamily;
+
   // Map common font weights to Figma font styles
   const getFontStyle = (weight) => {
-    switch (weight) {
-      case 100:
-        return "Thin";
-      case 200:
-        return "Extra Light";
-      case 300:
-        return "Light";
-      case 400:
-        return "Regular";
-      case 500:
-        return "Medium";
-      case 600:
-        return "Semi Bold";
-      case 700:
-        return "Bold";
-      case 800:
-        return "Extra Bold";
-      case 900:
-        return "Black";
-      default:
-        return "Regular";
-    }
+    if (weight >= 900) return "Black";
+    if (weight >= 800) return "Extra Bold";
+    if (weight >= 700) return "Bold";
+    if (weight >= 600) return "Semi Bold";
+    if (weight >= 500) return "Medium";
+    if (weight >= 400) return "Regular";
+    if (weight >= 300) return "Light";
+    if (weight >= 200) return "Extra Light";
+    if (weight >= 100) return "Thin";
+    return "Regular";
   };
 
   const textNode = figma.createText();
@@ -846,13 +1222,24 @@ async function createText(params) {
   textNode.name = name || text;
   try {
     await figma.loadFontAsync({
-      family: "Inter",
-      style: getFontStyle(fontWeight),
+      family: resolvedFontFamily,
+      style: getFontStyle(resolvedFontWeight),
     });
-    textNode.fontName = { family: "Inter", style: getFontStyle(fontWeight) };
-    textNode.fontSize = parseInt(fontSize);
+    textNode.fontName = { family: resolvedFontFamily, style: getFontStyle(resolvedFontWeight) };
+    textNode.fontSize = parseInt(resolvedFontSize);
   } catch (error) {
-    console.error("Error setting font size", error);
+    console.error("Error setting font:", error);
+    // Fallback to Inter Regular
+    try {
+      await figma.loadFontAsync({
+        family: "Inter",
+        style: "Regular",
+      });
+      textNode.fontName = { family: "Inter", style: "Regular" };
+      textNode.fontSize = parseInt(resolvedFontSize);
+    } catch (fallbackError) {
+      console.error("Error setting fallback font:", fallbackError);
+    }
   }
   setCharacters(textNode, text);
 
@@ -860,11 +1247,11 @@ async function createText(params) {
   const paintStyle = {
     type: "SOLID",
     color: {
-      r: parseFloat(fontColor.r) || 0,
-      g: parseFloat(fontColor.g) || 0,
-      b: parseFloat(fontColor.b) || 0,
+      r: parseFloat(resolvedFontColor.r) || 0,
+      g: parseFloat(resolvedFontColor.g) || 0,
+      b: parseFloat(resolvedFontColor.b) || 0,
     },
-    opacity: parseFloat(fontColor.a) || 1,
+    opacity: parseFloat(resolvedFontColor.a) || 1,
   };
   textNode.fills = [paintStyle];
 
@@ -891,8 +1278,8 @@ async function createText(params) {
     height: textNode.height,
     characters: textNode.characters,
     fontSize: textNode.fontSize,
-    fontWeight: fontWeight,
-    fontColor: fontColor,
+    fontWeight: resolvedFontWeight,
+    fontColor: resolvedFontColor,
     fontName: textNode.fontName,
     fills: textNode.fills,
     parentId: textNode.parent ? textNode.parent.id : undefined,
@@ -2386,17 +2773,17 @@ async function getAnnotations(params) {
         throw new Error(`Node type ${node.type} does not support annotations`);
       }
 
-      const result = {
+      const response = {
         nodeId: node.id,
         name: node.name,
         annotations: node.annotations || [],
       };
 
       if (includeCategories) {
-        result.categories = Object.values(categoriesMap);
+        response.categories = Object.values(categoriesMap);
       }
 
-      return result;
+      return response;
     } else {
       // Get all annotations in the current page
       const annotations = [];
