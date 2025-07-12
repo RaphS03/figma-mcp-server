@@ -1,0 +1,9 @@
+{
+    "servers": {
+        "figma-mcp": {
+            "type": "stdio",
+            "command": "node",
+            "args": ["C:\\Users\\rapha\\Code\\figma-mcp-server\\start-with-socket.js"]
+        }
+    }
+}
