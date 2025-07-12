@@ -30,12 +30,6 @@ interface CommandProgressUpdate {
     timestamp: number;
 }
 
-// Add TypeScript interfaces for component overrides after line 21
-interface ComponentOverride {
-    id: string;
-    overriddenFields: string[];
-}
-
 // Update the getInstanceOverridesResult interface to match the plugin implementation
 interface getInstanceOverridesResult {
     success: boolean;
@@ -3026,5 +3020,3 @@ main().catch(error => {
     logger.error(`Error starting FigmaMCP server: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
 });
-
-

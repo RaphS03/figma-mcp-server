@@ -2,7 +2,7 @@
   "name": "figma-copilot-mcp-server",
   "version": "1.0.0",
   "description": "MCP server to create designs on Figma through GitHub Copilot.",
-  "main": "index.js",
+  "main": "start-with-socket.js",
   "type": "module",
   "scripts": {
     "start": "node start-with-socket.js",
